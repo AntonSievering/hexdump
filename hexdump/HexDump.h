@@ -10,37 +10,49 @@
 #include <iostream>
 #include <iomanip>
 
-void hexdump(const std::wstring &content, const std::size_t &bytes)
+void hexdump(const std::wstring &content, const std::size_t &bytes, const bool &bIndex, const bool &bHex, const bool &bText)
 {
 	for (std::size_t block = 0; block < content.size(); block += bytes)
 	{
-		// offset from the start of the file
-		std::cout << "0x";
-		std::cout << std::hex << std::setfill('0') << std::setw(16) << block << " ";
-
-		// hex values
-		for (std::size_t offset = 0; offset < bytes; offset++)
+		// The offset of the line from the start
+		if (bIndex)
 		{
-			std::size_t index = block + offset;
-
-			if (index < content.size())
-				std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)(uint8_t)content[index] << " ";
-			else
-				std::cout << "   ";
+			// offset from the start of the file
+			std::cout << "0x";
+			std::cout << std::hex << std::setfill('0') << std::setw(16) << block << " ";
 		}
 
-		// string
-		for (std::size_t offset = 0; offset < bytes; offset++)
+		// The hexadecimal values
+		if (bHex)
 		{
-			std::size_t index = block + offset;
-			if (index < content.size())
+			// hex values
+			for (std::size_t offset = 0; offset < bytes; offset++)
 			{
-				char c = content[index];
+				std::size_t index = block + offset;
 
-				if (c >= 32)
-					std::cout << std::dec << c;
+				if (index < content.size())
+					std::cout << std::hex << std::setfill('0') << std::setw(2) << (int)(uint8_t)content[index] << " ";
 				else
-					std::cout << std::dec << ".";
+					std::cout << "   ";
+			}
+		}
+
+		// utf-8 text representation
+		if (bText)
+		{
+			// string
+			for (std::size_t offset = 0; offset < bytes; offset++)
+			{
+				std::size_t index = block + offset;
+				if (index < content.size())
+				{
+					char c = content[index];
+
+					if (c >= 32)
+						std::cout << std::dec << c;
+					else
+						std::cout << std::dec << ".";
+				}
 			}
 		}
 
